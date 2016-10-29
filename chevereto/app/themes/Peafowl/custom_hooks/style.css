@@ -1,0 +1,13 @@
+/* Button in login screen */
+.btn-yandex {
+	background: #ffb418;
+}
+
+.icon-yandex:before {
+  content: "\e900";
+}
+
+/* Style button in profile settings */
+.btn-yandex, .link-yandex span {
+	background: #ffb418;
+}
