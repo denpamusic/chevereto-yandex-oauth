@@ -45,7 +45,7 @@ $route = function($handler) {
 		// Require the connect vendor class
 		switch($doing) {
 			case 'yandex':
-				$vendor_autoload = 'phar://' . CHV_APP_PATH_LIB_VENDOR . $doing.'/'.$doing.'.phar/vendor/autoload.php';
+				$vendor_autoload = CHV_APP_PATH_LIB_VENDOR . 'oauth2/autoload.php';
 				break;
 			default:
 				$vendor_autoload = CHV_APP_PATH_LIB_VENDOR . $doing.'/'.$doing.'.php';
