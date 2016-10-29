@@ -8,13 +8,29 @@ $route = function($handler) {
 	/* Get table prefix */
 	$table_prefix = G\get_app_setting('db_table_prefix');
 
+	$fields = G\DB::queryFetchAll("DESCRIBE ${table_prefix}logins");
+
+	foreach($fields as $v) {
+		if($v['Field'] == 'login_type') {
+			$login_type = $v['Type'];
+			continue;
+		}
+	}
+
+	$login_type = explode(',', trim(str_replace('enum(', '(', $login_type), '()'));
+	if( !in_array("'live'", $login_type) ) {
+		$login_type[] = "'live'";
+	}
+
+	$login_type = implode(',', $login_type);
+
 	$sql_update = [
 		/* Settings values */
 		'yandex' => "INSERT INTO `${table_prefix}settings`(`setting_id`, `setting_name`, `setting_value`, `setting_default`, `setting_typeset`) VALUES (NULL, 'yandex', 0, 0, 'bool');",
 		'yandex_client_id' => "INSERT INTO `${table_prefix}settings`(`setting_id`, `setting_name`, `setting_value`, `setting_default`, `setting_typeset`) VALUES (NULL, 'yandex_client_id', NULL, NULL, 'string');",
 		'yandex_client_secret' => "INSERT INTO `${table_prefix}settings`(`setting_id`, `setting_name`, `setting_value`, `setting_default`, `setting_typeset`) VALUES (NULL, 'yandex_client_secret', NULL, NULL, 'string');",
 		/* Support new social login type */
-		"ALTER TABLE `${table_prefix}logins` CHANGE `login_type` `login_type` ENUM('password','session','cookie','facebook','twitter','google','vk','yandex') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;",
+		"ALTER TABLE `${table_prefix}logins` CHANGE `login_type` `login_type` ENUM($login_type) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;",
 	];
 
 	$settings = G\DB::queryFetchAll("SELECT `setting_name` FROM `${table_prefix}settings`");

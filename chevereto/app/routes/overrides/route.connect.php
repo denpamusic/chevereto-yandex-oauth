@@ -38,7 +38,7 @@ $route = function($handler) {
 		}
 
 		// Forbidden connection
-		if(!CHV\getSetting($doing) && $doing != 'yandex') {
+		if(!CHV\getSetting($doing)) {
 			return $handler->issue404();
 		}
 
