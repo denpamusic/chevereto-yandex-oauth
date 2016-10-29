@@ -18,8 +18,8 @@ $route = function($handler) {
 	}
 
 	$login_type = explode(',', trim(str_replace('enum(', '(', $login_type), '()'));
-	if( !in_array("'live'", $login_type) ) {
-		$login_type[] = "'live'";
+	if( !in_array("'yandex'", $login_type) ) {
+		$login_type[] = "'yandex'";
 	}
 
 	$login_type = implode(',', $login_type);

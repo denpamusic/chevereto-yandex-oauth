@@ -295,50 +295,41 @@ $route = function($handler) {
 					'secret'	=> CHV\getSetting('yandex_client_secret')
 				];
 
-				$client = new Yandex\OAuth\OAuthClient($yandex['id'], $yandex['secret']);
+				$client = new Aego\OAuth2\Client\Provider\Yandex([
+					'clientId' => $yandex['id'],
+					'clientSecret' => $yandex['secret'],
+				]);
 
-				if( isset($_REQUEST['code']) ) {
+				if ( isset($_GET['code']) ) {
+					$token = $client->getAccessToken('authorization_code', ['code' => $_GET['code']]);
+
 					try {
-						$client->requestAccessToken($_REQUEST['code']);
-					} catch (Yandex\OAuth\Exception\AuthRequestException $e) {
-						throw new Exception('Yandex connect error:'.$e->getMessage(), 400);
-					}
-				}
-
-				if( $token = $client->getAccessToken() ) {
-					$client = new GuzzleHttp\Client();
-
-					$response = $client->get('https://login.yandex.ru/info', [
-						'query' => [
-							'format' => 'json',
-							'oauth_token' => $token
-						]
-					]);
-
-					$body = json_decode($response->getBody(), true);
-					if($body) {
+						$user = $client->getResourceOwner($token);
 						$social_pictures = [
-							'avatar'		=> $body['is_avatar_empty'] ? NULL : 'https://avatars.yandex.net/get-yapic/' . $body['default_avatar_id'] . '/islands-200',
+							'avatar'		=> $user->getImageurl(),
 							'background'	=> NULL
 						];
 						$connect_user = [
-							'id'		=> $body['id'],
-							'username'	=> G\sanitize_string(G\unaccent_string($body['login']), true, true),
-							'name'		=> trim($body['real_name']),
-							'avatar'	=> $body['is_avatar_empty'] ? NULL : 'https://avatars.yandex.net/get-yapic/' . $body['default_avatar_id'] . '/islands-200',
-							'email'  	=> $body['default_email'],
-							'url'		=> '',
-							'website'	=> '',
+							'id'		=> $user->getId(),
+							'username'	=> G\sanitize_string(G\unaccent_string($user->getNickname()), true, true),
+							'name'		=> trim($user->getName()),
+							'avatar'	=> $user->getImageurl(),
+							'email'  	=> $user->getEmail(),
+							'url'		=> NULL,
+							'website'	=> NULL,
 						];
 						$connect_tokens = [
 							'secret'	=> $token,
 							'token_hash'=> NULL
 						];
 						$do_connect = true;
+					} catch (Exception $e) {
+						throw new Exception('Yandex connect error:' . $e->getMessage(), 400);
 					}
 				} else {
-					G\redirect($client->getAuthUrl());
+					G\redirect( $client->getAuthorizationUrl() );
 				}
+			break;
 		}
 
 		if($do_connect) {

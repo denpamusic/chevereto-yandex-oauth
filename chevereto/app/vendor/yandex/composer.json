@@ -1,0 +1,14 @@
+{
+	"repositories": [
+		{
+		        "type": "vcs",
+                        "url": "https://github.com/denpamusic/oauth2-yandex"
+		}
+	],
+	"require": {
+		"aego/oauth2-yandex": "dev-master"
+	},
+	"config": {
+		"vendor-dir": "."
+	}
+}

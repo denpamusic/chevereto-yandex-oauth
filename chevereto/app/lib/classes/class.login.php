@@ -171,9 +171,9 @@ class Login {
 			// Logout from the social network
 			if(array_key_exists($doing, self::getSocialServices(['get' => 'all']))) {
 				$logout_url = G\get_current_url();
-				require_once CHV_APP_PATH_LIB_VENDOR . $doing.'/'.$doing.'.php';
 				switch($doing) {
 					case 'facebook':
+						require_once CHV_APP_PATH_LIB_VENDOR . $doing.'/'.$doing.'.php';
 						$facebook = new \Facebook([
 							'appId'  => getSetting('facebook_app_id'),
 							'secret' => getSetting('facebook_app_secret')
